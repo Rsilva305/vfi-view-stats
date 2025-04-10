@@ -2,8 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  turbo: false,
+  reactStrictMode: true,
   images: {
+    domains: ['picsum.photos'],
     remotePatterns: [
       {
         protocol: 'https',

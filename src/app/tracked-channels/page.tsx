@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Plus, X, MoreVertical, Pin, Edit2, Copy, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 interface ChannelList {
   id: number;
@@ -16,7 +18,26 @@ export default function TrackedChannels() {
   const [channelLists, setChannelLists] = useState<ChannelList[]>([])
   const [editingListId, setEditingListId] = useState<number | null>(null)
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const menuRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const supabase = createClient()
+
+  // Auth check
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getUser()
+      if (!data.user) {
+        router.push('/auth/login')
+      } else {
+        setUser(data.user)
+      }
+      setLoading(false)
+    }
+    
+    checkAuth()
+  }, [supabase, router])
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -120,12 +141,17 @@ export default function TrackedChannels() {
     return 0
   })
 
+  // Show loading state if still checking auth
+  if (loading) {
+    return <div className="flex items-center justify-center py-24">Loading...</div>
+  }
+
   return (
     <div className="w-full max-w-[1200px] mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Tracked channels</h1>
       </div>
-      
+
       {channelLists.length === 0 ? (
         // Empty state container
         <div className="flex items-center justify-center py-24">

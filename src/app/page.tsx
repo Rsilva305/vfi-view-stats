@@ -1,5 +1,10 @@
+'use client'
+
 import VideoGrid from "@/components/layout/VideoGrid";
 import { ZoomIn, ZoomOut, LayoutGrid, List } from "lucide-react";
+import { useState, useEffect } from "react";
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 // Mock data for videos
 const mockVideos = [
@@ -42,50 +47,54 @@ const mockVideos = [
     channelAvatar: "https://picsum.photos/id/103/64/64",
     views: "178K",
     timestamp: "4 days ago"
-  },
-  {
-    id: "5",
-    title: "UI/UX Design Principles: Creating User-Friendly Interfaces",
-    thumbnail: "https://picsum.photos/id/5/640/360",
-    duration: "18:53",
-    channelName: "Design Hub",
-    channelAvatar: "https://picsum.photos/id/104/64/64",
-    views: "95K",
-    timestamp: "5 days ago"
-  },
-  {
-    id: "6",
-    title: "Introduction to TypeScript: Why You Should Use It",
-    thumbnail: "https://picsum.photos/id/6/640/360",
-    duration: "22:45",
-    channelName: "TypeScript Masters",
-    channelAvatar: "https://picsum.photos/id/105/64/64",
-    views: "156K",
-    timestamp: "1 month ago"
-  },
-  {
-    id: "7",
-    title: "State Management in React: Context API vs Redux",
-    thumbnail: "https://picsum.photos/id/7/640/360",
-    duration: "25:31",
-    channelName: "React Experts",
-    channelAvatar: "https://picsum.photos/id/106/64/64",
-    views: "203K",
-    timestamp: "3 weeks ago"
-  },
-  {
-    id: "8",
-    title: "Building a Full-Stack Application with MERN Stack",
-    thumbnail: "https://picsum.photos/id/8/640/360",
-    duration: "42:18",
-    channelName: "Full Stack Developers",
-    channelAvatar: "https://picsum.photos/id/107/64/64",
-    views: "328K",
-    timestamp: "2 months ago"
   }
 ];
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [zoomLevel, setZoomLevel] = useState<number>(1)
+  const router = useRouter()
+  const supabase = createClient()
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getUser()
+        if (!data.user) {
+          console.log("Not logged in, redirecting to login")
+          router.push('/auth/login')
+        } else {
+          console.log("User authenticated:", data.user.email)
+          setUser(data.user)
+        }
+      } catch (error) {
+        console.error("Auth check error:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    checkAuth()
+  }, [supabase, router])
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 1.5))
+  }
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.5))
+  }
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen"><p className="text-white text-xl">Loading...</p></div>
+  }
+
+  if (!user) {
+    return <div className="flex items-center justify-center h-screen"><p className="text-white text-xl">Redirecting to login...</p></div>
+  }
+
   return (
     <div className="w-full max-w-[1200px] mx-auto">
       {/* Controls */}
@@ -94,20 +103,32 @@ export default function Home() {
         <div className="flex items-center gap-2">
           {/* Zoom Controls */}
           <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
-            <button className="p-2 text-white hover:bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={handleZoomOut}
+              className="p-2 text-white hover:bg-[#3D3D3D] transition-colors"
+            >
               <ZoomOut size={18} />
             </button>
-            <button className="p-2 text-white hover:bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={handleZoomIn}
+              className="p-2 text-white hover:bg-[#3D3D3D] transition-colors"
+            >
               <ZoomIn size={18} />
             </button>
           </div>
           
           {/* View Mode Toggle */}
           <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
-            <button className="p-2 text-[#00FF8C] bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={`p-2 ${viewMode === 'grid' ? 'text-[#00FF8C] bg-[#3D3D3D]' : 'text-white hover:bg-[#3D3D3D]'} transition-colors`}
+            >
               <LayoutGrid size={18} />
             </button>
-            <button className="p-2 text-white hover:bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={() => setViewMode('list')}
+              className={`p-2 ${viewMode === 'list' ? 'text-[#00FF8C] bg-[#3D3D3D]' : 'text-white hover:bg-[#3D3D3D]'} transition-colors`}
+            >
               <List size={18} />
             </button>
           </div>
@@ -115,7 +136,9 @@ export default function Home() {
       </div>
       
       {/* Video Grid */}
-      <VideoGrid videos={mockVideos} />
+      <div style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top left' }}>
+        <VideoGrid videos={mockVideos} />
+      </div>
     </div>
-  );
+  )
 }

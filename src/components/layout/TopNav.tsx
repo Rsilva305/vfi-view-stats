@@ -1,10 +1,44 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search, Shuffle, Zap, HelpCircle, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Search, Shuffle, Zap, HelpCircle, User, LogOut } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
 
 export default function TopNav() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const router = useRouter()
+  const supabase = createClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      setUser(data.user)
+      setLoading(false)
+    }
+
+    getUser()
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null)
+      }
+    )
+
+    return () => {
+      authListener.subscription.unsubscribe()
+    }
+  }, [supabase])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.refresh()
+  }
+
   return (
     <header className="h-16 bg-[#121212] border-b border-[#2D2D2D]/50 flex items-center justify-between px-6">
       {/* Logo */}
@@ -39,9 +73,61 @@ export default function TopNav() {
         <button className="text-white p-2 rounded-full hover:bg-[#2D2D2D] transition-colors">
           <HelpCircle className="h-5 w-5" />
         </button>
-        <button className="w-8 h-8 rounded-full bg-[#2D2D2D] overflow-hidden">
-          <User className="h-full w-full text-gray-300 p-1.5" />
-        </button>
+        
+        {!loading && (
+          user ? (
+            <div className="relative">
+              <button 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-8 h-8 rounded-full bg-[#2D2D2D] overflow-hidden flex items-center justify-center"
+              >
+                {user.user_metadata?.avatar_url ? (
+                  <Image 
+                    src={user.user_metadata.avatar_url} 
+                    alt="User avatar" 
+                    width={32} 
+                    height={32} 
+                    className="object-cover" 
+                  />
+                ) : (
+                  <User className="h-5 w-5 text-gray-300" />
+                )}
+              </button>
+              
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-lg shadow-lg border border-[#2D2D2D] z-10">
+                  <div className="px-4 py-3 border-b border-[#2D2D2D]">
+                    <p className="text-sm text-white font-medium truncate">{user.email}</p>
+                  </div>
+                  <div className="py-1">
+                    <Link 
+                      href="/tracked-channels"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2D2D2D] hover:text-white"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Tracked Channels
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-[#2D2D2D]"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="flex items-center gap-1 text-white border border-[#2D2D2D] hover:bg-[#2D2D2D] px-3 py-1.5 rounded-lg transition-colors"
+            >
+              <User className="h-4 w-4" />
+              <span className="text-sm font-medium">Sign in</span>
+            </Link>
+          )
+        )}
       </div>
     </header>
   )
