@@ -143,9 +143,27 @@ export default function TrackedChannels() {
       ) : (
         // Channel lists grid
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Create new channel list button - Always first */}
+          <div 
+            className="border border-dashed border-[#2D2D2D] rounded-lg p-5 cursor-pointer hover:bg-[#1A1A1A] transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              openModal()
+            }}
+          >
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 text-[#00FF8C]">
+                <Plus size={18} />
+                <span className="font-medium">Create new channel list</span>
+              </div>
+            </div>
+            <p className="text-gray-400 text-sm mt-1">Add a new collection</p>
+          </div>
+          
+          {/* Channel lists */}
           {sortedLists.map((list) => (
             <div key={list.id} className="relative">
-              <Link href={`/tracked-channels/${list.id}`}>
+              <Link href={`/tracked-channels/${list.id}?name=${encodeURIComponent(list.name)}`}>
                 <div className="bg-[#1A1A1A] hover:bg-[#2D2D2D] border border-[#2D2D2D] rounded-lg p-5 transition-colors cursor-pointer group">
                   <div className="flex justify-between items-start">
                     <h3 className="text-white font-medium text-lg">{list.name}</h3>
@@ -215,20 +233,6 @@ export default function TrackedChannels() {
               )}
             </div>
           ))}
-          
-          {/* Add new channel list button */}
-          <div 
-            className="border-2 border-dashed border-[#2D2D2D] rounded-lg flex items-center justify-center p-6 min-h-[120px] cursor-pointer hover:bg-[#1A1A1A] transition-colors"
-            onClick={(e) => {
-              e.stopPropagation()
-              openModal()
-            }}
-          >
-            <div className="flex items-center gap-2 text-[#00FF8C]">
-              <Plus size={20} />
-              <span className="font-medium">Create new channel list</span>
-            </div>
-          </div>
         </div>
       )}
 
