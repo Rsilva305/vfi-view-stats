@@ -12,25 +12,26 @@ interface SidebarItemProps {
   isActive?: boolean
 }
 
-const SidebarItem = ({ icon, label, href, isActive = false }: SidebarItemProps) => {
+const SidebarItem = ({ icon, label, href, isActive }: SidebarItemProps): JSX.Element => {
   return (
-    <Link href={href} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-      isActive 
-        ? 'bg-[#2D2D2D] text-[#00FF8C]' 
-        : 'text-white hover:bg-[#2D2D2D]/70'
-    }`}>
-      <div className="text-xl">
-        {icon}
-      </div>
+    <Link 
+      href={href}
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+        isActive 
+          ? 'bg-[#00FF8C]/10 text-[#00FF8C]' 
+          : 'text-gray-400 hover:bg-[#2D2D2D] hover:text-white'
+      }`}
+    >
+      {icon}
       <span className="text-sm font-medium">{label}</span>
     </Link>
   )
 }
 
-export default function Sidebar() {
+export default function Sidebar(): JSX.Element {
   const pathname = usePathname()
   
-  const isActive = (path: string) => {
+  const isActive = (path: string): boolean => {
     if (path === '/') {
       return pathname === '/'
     }

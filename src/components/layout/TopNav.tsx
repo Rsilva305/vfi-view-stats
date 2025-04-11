@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Search, Shuffle, Zap, HelpCircle, User } from 'lucide-react'
 
-export default function TopNav() {
+export default function TopNav(): JSX.Element {
   return (
     <header className="h-16 bg-[#121212] border-b border-[#2D2D2D]/50 flex items-center justify-between px-6">
       {/* Logo */}

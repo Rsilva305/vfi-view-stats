@@ -1,5 +1,8 @@
+"use client";
+
 import VideoGrid from "@/components/layout/VideoGrid";
 import { ZoomIn, ZoomOut, LayoutGrid, List } from "lucide-react";
+import { useState } from "react";
 
 // Mock data for videos
 const mockVideos = [
@@ -85,7 +88,18 @@ const mockVideos = [
   }
 ];
 
-export default function Home() {
+export default function Home(): JSX.Element {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+
+  const handleZoomIn = (): void => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+  };
+
+  const handleZoomOut = (): void => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+  };
+
   return (
     <div className="w-full max-w-[1200px] mx-auto">
       {/* Controls */}
@@ -94,28 +108,41 @@ export default function Home() {
         <div className="flex items-center gap-2">
           {/* Zoom Controls */}
           <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
-            <button className="p-2 text-white hover:bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={handleZoomOut}
+              className="p-2 text-white hover:bg-[#3D3D3D] transition-colors"
+            >
               <ZoomOut size={18} />
             </button>
-            <button className="p-2 text-white hover:bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={handleZoomIn}
+              className="p-2 text-white hover:bg-[#3D3D3D] transition-colors"
+            >
               <ZoomIn size={18} />
             </button>
           </div>
-          
-          {/* View Mode Toggle */}
+          {/* View Mode Controls */}
           <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
-            <button className="p-2 text-[#00FF8C] bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={`p-2 text-white transition-colors ${viewMode === 'grid' ? 'bg-[#3D3D3D]' : 'hover:bg-[#3D3D3D]'}`}
+            >
               <LayoutGrid size={18} />
             </button>
-            <button className="p-2 text-white hover:bg-[#3D3D3D] transition-colors">
+            <button 
+              onClick={() => setViewMode('list')}
+              className={`p-2 text-white transition-colors ${viewMode === 'list' ? 'bg-[#3D3D3D]' : 'hover:bg-[#3D3D3D]'}`}
+            >
               <List size={18} />
             </button>
           </div>
         </div>
       </div>
-      
+
       {/* Video Grid */}
-      <VideoGrid videos={mockVideos} />
+      <div style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top left' }}>
+        <VideoGrid videos={mockVideos} />
+      </div>
     </div>
   );
 }
