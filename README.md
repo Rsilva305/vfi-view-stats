@@ -36,7 +36,8 @@ A modern video statistics dashboard built with Next.js and TailwindCSS.
 - Responsive design
 - Basic navigation
 - Image optimization
-- Collapsible sidebar navigation
+- Collapsible sidebar navigation with hamburger toggle
+- Dark mode UI design
 
 ## Tech Stack
 - Next.js 14

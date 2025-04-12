@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, Bookmark, Layers, Search, Home, AlignJustify } from 'lucide-react'
 
+// SidebarItem component for rendering individual navigation items
 interface SidebarItemProps {
   icon: React.ReactNode
   label: string
