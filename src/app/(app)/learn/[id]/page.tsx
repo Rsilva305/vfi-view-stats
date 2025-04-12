@@ -33,13 +33,13 @@ const tutorials: Tutorial[] = [
   },
   {
     id: '2',
-    title: 'Complete Beginner Guide - How To Use Velio To Get More Views',
-    description: 'Everything you need to use Velio to blow up your channel',
+    title: 'Complete Beginner Guide - How To Use VueIQ To Get More Views',
+    description: 'Everything you need to use VueIQ to blow up your channel',
     thumbnail: '/images/tutorials/beginner-guide.png',
     watched: false,
     category: 'basics',
     videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    content: 'New to Velio? This beginner guide covers all the essentials to get you started with our platform and maximize your channel growth from day one.',
+    content: 'New to VueIQ? This beginner guide covers all the essentials to get you started with our platform and maximize your channel growth from day one.',
     relatedTutorials: ['1', '4']
   },
   {
@@ -175,16 +175,16 @@ export default function TutorialDetail() {
                       {related.category === 'organization' && <span className="text-2xl">📁</span>}
                     </div>
                     <div>
-                      <h3 className="text-white font-medium text-sm group-hover:text-[#00FF8C] transition-colors line-clamp-2">
+                      <h3 className="text-white font-medium text-sm group-hover:text-[#d61204] transition-colors line-clamp-2">
                         {related.title}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
                         {related.watched ? (
-                          <CheckCircle size={14} className="text-[#00FF8C]" />
+                          <CheckCircle size={14} className="text-[#d61204]" />
                         ) : (
                           <Circle size={14} className="text-gray-400" />
                         )}
-                        <span className={`text-xs ${related.watched ? 'text-[#00FF8C]' : 'text-gray-400'}`}>
+                        <span className={`text-xs ${related.watched ? 'text-[#d61204]' : 'text-gray-400'}`}>
                           {related.watched ? 'Watched' : 'Not watched'}
                         </span>
                       </div>
