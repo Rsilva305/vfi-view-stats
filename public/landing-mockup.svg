@@ -12,10 +12,10 @@
   <rect x="300" y="145" width="170" height="110" rx="4" fill="#2D2D2D"/>
   
   <!-- Accent colors -->
-  <rect x="130" y="65" width="15" height="15" rx="2" fill="#00FF8C"/>
-  <rect x="290" y="105" width="60" height="20" rx="2" fill="#00FF8C"/>
+  <rect x="130" y="65" width="15" height="15" rx="2" fill="#d61204"/>
+  <rect x="290" y="105" width="60" height="20" rx="2" fill="#d61204"/>
   
   <!-- Chart visualization -->
   <path d="M490 160 L490 245 L310 245" stroke="#333" stroke-width="1"/>
-  <path d="M330 230 L350 210 L370 225 L390 190 L410 215 L430 175 L450 205 L470 160" stroke="#00FF8C" stroke-width="2" fill="none"/>
+  <path d="M330 230 L350 210 L370 225 L390 190 L410 215 L430 175 L450 205 L470 160" stroke="#d61204" stroke-width="2" fill="none"/>
 </svg> 
