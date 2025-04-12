@@ -90,7 +90,7 @@ export default function SavedVideoDetail() {
             <input
               type="text"
               placeholder="Search in this collection"
-              className="bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-4 py-2 pl-10 w-[280px] focus:outline-none focus:ring-1 focus:ring-[#00FF8C]/50"
+              className="bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-4 py-2 pl-10 w-[280px] focus:outline-none focus:ring-1 focus:ring-[#d61204]/50"
             />
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
@@ -121,7 +121,7 @@ export default function SavedVideoDetail() {
           </div>
           
           <button 
-            className="flex items-center gap-2 bg-[#1DB954] hover:bg-[#1DB954]/90 text-white px-3 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-[#d61204] hover:bg-[#b81003] text-white px-3 py-2 rounded-lg transition-colors"
           >
             <Plus size={18} />
             <span>Add video</span>
@@ -145,7 +145,7 @@ export default function SavedVideoDetail() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Date added</label>
-              <select className="w-full bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#00FF8C]/50">
+              <select className="w-full bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#d61204]/50">
                 <option>All time</option>
                 <option>Last 7 days</option>
                 <option>Last 30 days</option>
@@ -155,7 +155,7 @@ export default function SavedVideoDetail() {
             
             <div>
               <label className="block text-sm text-gray-400 mb-1">Duration</label>
-              <select className="w-full bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#00FF8C]/50">
+              <select className="w-full bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#d61204]/50">
                 <option>Any duration</option>
                 <option>Under 5 minutes</option>
                 <option>5-15 minutes</option>
@@ -166,7 +166,7 @@ export default function SavedVideoDetail() {
             
             <div>
               <label className="block text-sm text-gray-400 mb-1">Sort by</label>
-              <select className="w-full bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#00FF8C]/50">
+              <select className="w-full bg-[#2D2D2D] text-white border border-[#3D3D3D] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#d61204]/50">
                 <option>Date added (newest)</option>
                 <option>Date added (oldest)</option>
                 <option>Views (high to low)</option>
@@ -181,7 +181,7 @@ export default function SavedVideoDetail() {
       {mockVideos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <p className="text-gray-400 mb-4">No videos in this collection yet.</p>
-          <button className="flex items-center gap-2 bg-[#1DB954] hover:bg-[#1DB954]/90 text-white px-4 py-2 rounded-lg transition-colors">
+          <button className="flex items-center gap-2 bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-lg transition-colors">
             <Plus size={18} />
             <span>Add your first video</span>
           </button>
@@ -207,7 +207,7 @@ export default function SavedVideoDetail() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="text-white font-medium line-clamp-2 group-hover:text-[#00FF8C] transition-colors">
+                  <h3 className="text-white font-medium line-clamp-2 group-hover:text-[#d61204] transition-colors">
                     {video.title}
                   </h3>
                   <div className="flex items-center mt-2">
@@ -243,7 +243,7 @@ export default function SavedVideoDetail() {
                   </div>
                 </div>
                 <div className="p-4 flex-1">
-                  <h3 className="text-white font-medium group-hover:text-[#00FF8C] transition-colors">
+                  <h3 className="text-white font-medium group-hover:text-[#d61204] transition-colors">
                     {video.title}
                   </h3>
                   <div className="flex items-center mt-2">

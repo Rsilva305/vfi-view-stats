@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
@@ -89,12 +89,15 @@ export default function ChannelListDetail() {
   const { id } = useParams()
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
+  const [conceptSearchQuery, setConceptSearchQuery] = useState('')
   const [chartMetric, setChartMetric] = useState('Subscribers')
   const [subscribersOnly, setSubscribersOnly] = useState(true)
-  const [addingChannel, setAddingChannel] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
   const [newChannelUrl, setNewChannelUrl] = useState('')
   const [channels, setChannels] = useState(mockChannels)
   const [trackedChannels, setTrackedChannels] = useState<number[]>([])
+  const [sortBy, setSortBy] = useState('date')
+  const [gridView, setGridView] = useState(true)
 
   // Get the channel list name from URL query parameters
   const channelListName = searchParams.get('name') 
@@ -104,7 +107,7 @@ export default function ChannelListDetail() {
   const handleAddChannel = () => {
     if (newChannelUrl.trim()) {
       // In a real app, you would parse the URL and fetch channel data
-      setAddingChannel(false)
+      setShowAddModal(false)
       setNewChannelUrl('')
       alert('Channel would be added in a real implementation')
     }
@@ -146,7 +149,7 @@ export default function ChannelListDetail() {
                     checked={subscribersOnly} 
                     onChange={() => setSubscribersOnly(!subscribersOnly)} 
                   />
-                  <div className={`block w-10 h-6 rounded-full ${subscribersOnly ? 'bg-[#1DB954]' : 'bg-[#2D2D2D]'}`}></div>
+                  <div className={`block w-10 h-6 rounded-full ${subscribersOnly ? 'bg-[#d61204]' : 'bg-[#2D2D2D]'}`}></div>
                   <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${subscribersOnly ? 'transform translate-x-4' : ''}`}></div>
                 </div>
                 <span className="ml-2 text-white text-sm">Subscribers</span>
@@ -188,16 +191,17 @@ export default function ChannelListDetail() {
             {channels.map((channel, index) => (
               <div key={channel.id} className="flex-1 flex flex-col items-center">
                 <div 
-                  className="w-full bg-[#1DB954] rounded-t-sm" 
+                  className="w-full rounded-t-sm" 
                   style={{ 
                     height: `${Math.max((channel.subscribers / 8400000) * 180, 10)}px`,
-                    opacity: index === 0 ? 1 : 0.8 - (index * 0.1)
+                    backgroundColor: '#d61204',
+                    opacity: index === 0 ? 1 : (index === 1 ? 0.8 : (index === 2 ? 0.65 : (index === 3 ? 0.55 : (index === 4 ? 0.5 : 0.45))))
                   }}
                 ></div>
-                <div className="w-8 h-8 rounded-full bg-[#2D2D2D] mt-2 overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center text-white text-xs">
-                    {channel.name.charAt(0)}
-                  </div>
+                <div className="w-8 h-8 rounded-full bg-[#2D2D2D] mt-2 overflow-hidden flex items-center justify-center">
+                  <span className="text-white text-xs">
+                    {['T', 'E', 'E', 'H', 'V', 'P'][index]}
+                  </span>
                 </div>
               </div>
             ))}
@@ -236,7 +240,7 @@ export default function ChannelListDetail() {
                   <h3 className="text-white font-medium text-base mb-1">{channel.name}</h3>
                   <p className="text-gray-400 text-sm mb-3">{channel.subscribers} subscribers</p>
                   <button 
-                    className="w-full flex items-center justify-center gap-1 bg-transparent border border-[#1DB954] text-[#1DB954] hover:bg-[#1DB954]/10 px-3 py-1.5 rounded-md text-sm transition-colors"
+                    className="w-full flex items-center justify-center gap-1 bg-transparent border border-[#d61204] text-[#d61204] hover:bg-[#d61204]/10 px-3 py-1.5 rounded-md text-sm transition-colors"
                     onClick={() => toggleTrackChannel(channel.id)}
                   >
                     <Plus size={14} />
@@ -248,88 +252,109 @@ export default function ChannelListDetail() {
           </div>
           
           {/* Navigation Arrows */}
-          <button className="absolute top-1/2 -left-4 transform -translate-y-1/2 bg-[#2D2D2D] rounded-full p-2 text-white hover:bg-[#3D3D3D] transition-colors">
-            <ChevronLeft size={20} />
+          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-4">
+            <button className="bg-[#1A1A1A]/90 text-white p-2 rounded-full hover:bg-[#2D2D2D] transition-colors">
+              <ChevronLeft size={20} />
+            </button>
+          </div>
+          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 -mr-4">
+            <button className="bg-[#1A1A1A]/90 text-white p-2 rounded-full hover:bg-[#2D2D2D] transition-colors">
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filter Controls */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <button className="bg-[#2D2D2D] hover:bg-[#3D3D3D] p-2 rounded-lg text-white mr-2">
+            <AlignJustify size={18} />
           </button>
-          <button className="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-[#2D2D2D] rounded-full p-2 text-white hover:bg-[#3D3D3D] transition-colors">
-            <ChevronRight size={20} />
-          </button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+            <input
+              type="text"
+              placeholder="Search a concept"
+              value={conceptSearchQuery}
+              onChange={(e) => setConceptSearchQuery(e.target.value)}
+              className="w-60 bg-[#2D2D2D] text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none"
+            />
+          </div>
         </div>
 
-        {/* Search and Filter Section */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <button className="w-10 h-10 flex items-center justify-center bg-[#2D2D2D] rounded-full text-gray-400 hover:text-white">
-              <AlignJustify size={20} />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center">
+            <button className="flex items-center gap-1 text-gray-400 hover:bg-[#2D2D2D] px-2 py-2 rounded-lg text-sm">
+              <Minus size={16} />
             </button>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search a concept"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#2D2D2D] text-white rounded-full py-2 pl-10 pr-4 focus:outline-none"
-              />
-            </div>
+            <span className="text-white mx-1">4</span>
+            <button className="flex items-center gap-1 text-gray-400 hover:bg-[#2D2D2D] px-2 py-2 rounded-lg text-sm">
+              <Plus size={16} />
+            </button>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
-              <button className="flex items-center gap-2 text-gray-400 px-3 py-1.5 text-sm hover:bg-[#3D3D3D]">
-                <Minus size={16} />
-                <span>4</span>
-                <PlusIcon size={16} />
-              </button>
-            </div>
-            <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
-              <button className="flex items-center gap-2 text-white bg-[#3D3D3D] px-3 py-1.5 text-sm">
-                <LayoutGrid size={16} />
-              </button>
-              <button className="flex items-center gap-2 text-gray-400 px-3 py-1.5 text-sm hover:bg-[#3D3D3D]">
-                <AlignJustify size={16} />
-              </button>
-            </div>
-            <button className="flex items-center gap-2 text-gray-200 bg-[#2D2D2D] px-3 py-1.5 text-sm rounded-lg">
+          
+          <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
+            <button 
+              className="p-2 text-white transition-colors bg-[#3D3D3D]"
+              onClick={() => setGridView(true)}
+            >
+              <LayoutGrid size={18} />
+            </button>
+            <button 
+              className="p-2 text-white transition-colors"
+              onClick={() => setGridView(false)}
+            >
+              <AlignJustify size={18} />
+            </button>
+          </div>
+          
+          <div className="flex items-center">
+            <button className="flex items-center gap-2 bg-[#2D2D2D] text-white px-3 py-2 rounded-lg text-sm">
               <span>Sort by date</span>
               <ChevronDown size={16} />
             </button>
+          </div>
+          
+          <div className="flex items-center">
             <button 
-              className="flex items-center gap-2 bg-[#1DB954] hover:bg-[#1DB954]/90 text-white px-4 py-2 rounded-lg"
-              onClick={() => setAddingChannel(true)}
+              className="flex items-center gap-2 bg-[#d61204] hover:bg-[#b81003] text-white px-3 py-2 rounded-lg text-sm transition-colors"
+              onClick={() => setShowAddModal(true)}
             >
-              <PlusIcon size={16} />
+              <Plus size={16} />
               <span>Add channels</span>
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Video Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Video Grid */}
+      <div className="bg-[#1A1A1A] rounded-lg p-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {mockVideos.map((video) => (
-            <div key={video.id} className="bg-[#2D2D2D]/50 rounded-lg overflow-hidden group cursor-pointer">
+            <div key={video.id} className="bg-[#1E1E1E] rounded-lg overflow-hidden hover:bg-[#252525] transition-colors cursor-pointer">
               {/* Thumbnail */}
-              <div className="relative aspect-video overflow-hidden">
-                <Image 
+              <div className="relative">
+                <img 
                   src={video.thumbnail} 
                   alt={video.title}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
+                  className="w-full h-48 object-cover"
                 />
-                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1 py-0.5 rounded">
                   {video.duration}
                 </div>
               </div>
               
-              {/* Content */}
-              <div className="p-3">
-                <h3 className="text-white font-medium text-sm line-clamp-2 mb-1">{video.title}</h3>
-                <p className="text-gray-400 text-xs">{video.channel}</p>
-                <div className="flex items-center text-gray-400 text-xs mt-1">
-                  <span>{video.views} views</span>
-                  <span className="mx-1">•</span>
-                  <span>{video.timestamp}</span>
+              {/* Video Info */}
+              <div className="p-4">
+                <h3 className="text-white font-medium text-base line-clamp-2 mb-2">{video.title}</h3>
+                <div className="flex justify-between text-xs text-gray-400">
+                  <div>{video.channel}</div>
+                  <div className="flex items-center gap-2">
+                    <span>{video.views} views</span>
+                    <span>•</span>
+                    <span>{video.timestamp}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -338,20 +363,20 @@ export default function ChannelListDetail() {
       </div>
 
       {/* Add Channel Modal */}
-      {addingChannel && (
+      {showAddModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#1F1F1F] rounded-lg w-full max-w-md p-6 relative">
+          <div className="bg-[#222222] rounded-lg w-full max-w-md p-6 relative">
             <button 
-              onClick={() => setAddingChannel(false)} 
-              className="absolute top-3 right-3 text-gray-400 hover:text-white"
+              onClick={() => setShowAddModal(false)} 
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6">Add YouTube Channel</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Add YouTube Channel</h2>
             
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-400 mb-2">
+            <div className="mb-6">
+              <label className="block text-gray-400 mb-2">
                 Enter YouTube Channel URL
               </label>
               <input
@@ -359,15 +384,16 @@ export default function ChannelListDetail() {
                 placeholder="https://www.youtube.com/@ChannelName"
                 value={newChannelUrl}
                 onChange={(e) => setNewChannelUrl(e.target.value)}
-                className="w-full bg-[#2D2D2D] text-white border-none rounded-md p-3 focus:outline-none focus:ring-1 focus:ring-[#00FF8C]"
+                className="w-full bg-[#333333] text-white border-none rounded-md p-3 mb-2 focus:outline-none"
+                autoFocus
               />
-              <p className="text-xs text-gray-500 mt-1">Example: https://www.youtube.com/@Romayroh</p>
+              <p className="text-gray-500 text-sm">Example: https://www.youtube.com/@Romayron</p>
             </div>
             
             <div className="flex justify-end">
               <button
                 onClick={handleAddChannel}
-                className="bg-[#1DB954] hover:bg-[#1DB954]/90 text-white font-medium px-4 py-2 rounded-md transition-colors"
+                className="bg-[#d61204] hover:bg-[#b81003] text-white font-medium px-6 py-3 rounded-md transition-colors"
               >
                 Add Channel
               </button>

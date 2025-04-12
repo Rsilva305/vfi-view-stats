@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useRef, useEffect } from 'react'
 import { Plus, X, MoreVertical, Pin, Edit2, Copy, Trash2 } from 'lucide-react'
@@ -133,7 +133,7 @@ export default function TrackedChannels() {
             <p className="text-gray-400 mb-6">You haven't created any channel lists yet.</p>
             <button 
               onClick={() => openModal()}
-              className="flex items-center gap-2 bg-[#1DB954] hover:bg-[#1DB954]/90 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus size={18} />
               <span>Create new channel list</span>
@@ -152,7 +152,7 @@ export default function TrackedChannels() {
             }}
           >
             <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2 text-[#00FF8C]">
+              <div className="flex items-center gap-2 text-[#d61204]">
                 <Plus size={18} />
                 <span className="font-medium">Create new channel list</span>
               </div>
@@ -193,7 +193,7 @@ export default function TrackedChannels() {
                       pinList(list.id)
                     }}
                   >
-                    <Pin size={16} className={list.isPinned ? 'text-[#00FF8C]' : ''} />
+                    <Pin size={16} className={list.isPinned ? 'text-[#d61204]' : ''} />
                     {list.isPinned ? 'Unpin' : 'Pin'}
                   </button>
                   <button 
@@ -248,35 +248,42 @@ export default function TrackedChannels() {
           >
             <button 
               onClick={closeModal} 
-              className="absolute top-3 right-3 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
             >
               <X size={20} />
             </button>
-            
-            <h2 className="text-xl font-bold text-white mb-6">
-              {editingListId !== null ? 'Rename channel list' : 'Name your channel list'}
-            </h2>
-            
-            <input
-              type="text"
-              placeholder="Name"
-              value={channelListName}
-              onChange={(e) => setChannelListName(e.target.value)}
-              className="w-full bg-[#2D2D2D] text-white border-none rounded-md p-3 mb-4 focus:outline-none focus:ring-1 focus:ring-[#00FF8C]"
-              autoFocus
-            />
-            
+            <h3 className="text-xl font-bold text-white mb-4">
+              {editingListId !== null ? 'Rename channel list' : 'Create channel list'}
+            </h3>
+            <div className="mb-4">
+              <label className="block text-gray-400 text-sm mb-2">Name</label>
+              <input 
+                type="text" 
+                value={channelListName}
+                onChange={(e) => setChannelListName(e.target.value)}
+                className="w-full bg-[#2A2A2A] border border-[#3A3A3A] text-white rounded-lg py-2 px-3 focus:outline-none focus:border-[#d61204]"
+                placeholder="Enter list name"
+                autoFocus
+              />
+            </div>
             <div className="flex justify-end">
-              <button
-                onClick={handleSave}
-                className="bg-gray-200 hover:bg-gray-300 text-black font-medium px-4 py-2 rounded-md transition-colors"
+              <button 
+                onClick={closeModal}
+                className="bg-transparent text-white hover:text-gray-300 px-4 py-2 rounded-lg mr-2"
               >
-                Save
+                Cancel
+              </button>
+              <button 
+                onClick={handleSave}
+                className="bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-lg"
+                disabled={!channelListName.trim()}
+              >
+                {editingListId !== null ? 'Save' : 'Create'}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 } 
