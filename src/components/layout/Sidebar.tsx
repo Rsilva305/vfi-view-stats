@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Bookmark, Layers, Search, Home, AlignJustify } from 'lucide-react'
+import { BookOpen, Bookmark, Layers, Search, AlignJustify } from 'lucide-react'
 
 // SidebarItem component for rendering individual navigation items
 interface SidebarItemProps {
@@ -40,10 +40,7 @@ export default function Sidebar({ collapsed, toggleSidebar }: SidebarProps): JSX
   const pathname = usePathname()
   
   const isActive = (path: string): boolean => {
-    if (path === '/') {
-      return pathname === '/'
-    }
-    return pathname === path
+    return pathname === path || pathname.startsWith(`${path}/`)
   }
   
   return (
@@ -64,13 +61,6 @@ export default function Sidebar({ collapsed, toggleSidebar }: SidebarProps): JSX
       </div>
       
       <div className="flex flex-col gap-1 px-2">
-        <SidebarItem 
-          icon={<Home size={20} />} 
-          label="Home" 
-          href="/"
-          isActive={isActive('/')} 
-          collapsed={collapsed}
-        />
         <SidebarItem 
           icon={<Search size={20} />} 
           label="Research" 
@@ -104,7 +94,7 @@ export default function Sidebar({ collapsed, toggleSidebar }: SidebarProps): JSX
       <div className="mt-auto px-4">
         {!collapsed && (
           <div className="border-t border-[#2D2D2D]/50 pt-4">
-            <p className="text-[#808080] text-xs">© 2025 VFI Beta</p>
+            <p className="text-[#808080] text-xs">© 2025 Velio</p>
           </div>
         )}
       </div>

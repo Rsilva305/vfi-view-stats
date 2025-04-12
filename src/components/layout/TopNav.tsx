@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Shuffle, Zap, HelpCircle, User } from 'lucide-react'
 
@@ -13,8 +12,8 @@ export default function TopNav({ collapsed, toggleSidebar }: TopNavProps): JSX.E
   return (
     <header className="h-16 bg-[#121212] border-b border-[#2D2D2D]/50 flex items-center justify-between px-6">
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2">
-        <span className="text-white font-bold text-xl">VFI</span>
+      <Link href="/research" className="flex items-center gap-2">
+        <span className="text-white font-bold text-xl">VELIO</span>
         <span className="text-[#00FF8C] text-xs font-medium px-1.5 py-0.5 bg-[#00FF8C]/10 rounded">Beta</span>
       </Link>
 
