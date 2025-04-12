@@ -1,262 +1,329 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Search, Filter, LayoutGrid, List, AlignLeft, CheckCircle2, Clock, BookmarkPlus } from "lucide-react";
+import { useState, useRef, useEffect } from 'react'
+import { Plus, X, MoreVertical, Pin, Edit2, Copy, Trash2 } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
+
+interface SavedVideoCollection {
+  id: number;
+  name: string;
+  isPinned: boolean;
+  videoCount: number;
+}
 
 // Mock data for saved videos
 const mockVideos = [
   {
     id: "1",
-    title: "How to Build a Modern React Application with NextJS and TypeScript",
-    thumbnail: "https://picsum.photos/id/1/640/360",
+    title: "How to Build a Modern React Application with NextJS",
+    thumbnail: "https://picsum.photos/id/11/640/360",
     duration: "15:42",
     channelName: "Dev Masters",
     channelAvatar: "https://picsum.photos/id/100/64/64",
     views: "246K",
-    timestamp: "3 days ago",
-    status: "Watched",
-    category: "Web Development"
+    timestamp: "3 days ago"
   },
   {
     id: "2",
-    title: "Learn CSS Grid Layout in 20 Minutes - Quick Tutorial for Beginners",
-    thumbnail: "https://picsum.photos/id/2/640/360",
+    title: "Learn CSS Grid Layout in 20 Minutes - Quick Tutorial",
+    thumbnail: "https://picsum.photos/id/22/640/360",
     duration: "20:15",
     channelName: "CSS Wizards",
     channelAvatar: "https://picsum.photos/id/101/64/64",
     views: "189K",
-    timestamp: "1 week ago",
-    status: "Not Started",
-    category: "CSS"
+    timestamp: "1 week ago"
   },
   {
     id: "3",
-    title: "JavaScript ES6: The Complete Guide to Modern JavaScript Features",
-    thumbnail: "https://picsum.photos/id/3/640/360",
+    title: "JavaScript ES6: The Complete Guide to Modern Features",
+    thumbnail: "https://picsum.photos/id/33/640/360",
     duration: "32:17",
     channelName: "JS Guru",
     channelAvatar: "https://picsum.photos/id/102/64/64",
     views: "412K",
-    timestamp: "2 weeks ago",
-    status: "In Progress",
-    category: "JavaScript"
-  },
-  {
-    id: "4",
-    title: "Building Responsive Websites with Tailwind CSS - Complete Walkthrough",
-    thumbnail: "https://picsum.photos/id/4/640/360",
-    duration: "28:09",
-    channelName: "Web Design Pro",
-    channelAvatar: "https://picsum.photos/id/103/64/64",
-    views: "178K",
-    timestamp: "4 days ago",
-    status: "Not Started",
-    category: "Tailwind CSS"
-  },
-  {
-    id: "5",
-    title: "UI/UX Design Principles: Creating User-Friendly Interfaces",
-    thumbnail: "https://picsum.photos/id/5/640/360",
-    duration: "18:53",
-    channelName: "Design Hub",
-    channelAvatar: "https://picsum.photos/id/104/64/64",
-    views: "95K",
-    timestamp: "5 days ago",
-    status: "Watched",
-    category: "UI/UX Design"
-  },
-  {
-    id: "6",
-    title: "Introduction to TypeScript: Why You Should Use It",
-    thumbnail: "https://picsum.photos/id/6/640/360",
-    duration: "22:45",
-    channelName: "TypeScript Masters",
-    channelAvatar: "https://picsum.photos/id/105/64/64",
-    views: "156K",
-    timestamp: "1 month ago",
-    status: "In Progress",
-    category: "TypeScript"
+    timestamp: "2 weeks ago"
   }
 ];
 
-// Status icon mapping
-const statusIcons: Record<string, JSX.Element> = {
-  "Watched": <CheckCircle2 size={16} className="text-green-500" />,
-  "In Progress": <Clock size={16} className="text-yellow-500" />,
-  "Not Started": <BookmarkPlus size={16} className="text-blue-500" />
-};
+export default function SavedVideos() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [collectionName, setCollectionName] = useState('')
+  const [videoCollections, setVideoCollections] = useState<SavedVideoCollection[]>([])
+  const [editingCollectionId, setEditingCollectionId] = useState<number | null>(null)
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
-export default function SavedVideos(): JSX.Element {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  
-  // Filter videos based on search query
-  const filteredVideos = mockVideos.filter(video => 
-    video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.channelName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const openModal = (collectionId?: number) => {
+    if (collectionId !== undefined) {
+      setEditingCollectionId(collectionId)
+      const collection = videoCollections.find(c => c.id === collectionId)
+      if (collection) setCollectionName(collection.name)
+    } else {
+      setEditingCollectionId(null)
+      setCollectionName('')
+    }
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setCollectionName('')
+    setEditingCollectionId(null)
+  }
+
+  const handleSave = () => {
+    if (collectionName.trim()) {
+      if (editingCollectionId !== null) {
+        // Update existing collection
+        setVideoCollections(
+          videoCollections.map(collection => 
+            collection.id === editingCollectionId 
+              ? { ...collection, name: collectionName } 
+              : collection
+          )
+        )
+      } else {
+        // Create new collection
+        const newCollection = {
+          id: Date.now(),
+          name: collectionName,
+          isPinned: false,
+          videoCount: 0
+        }
+        setVideoCollections([...videoCollections, newCollection])
+      }
+      setCollectionName('')
+      closeModal()
+    }
+  }
+
+  const toggleMenu = (id: number, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setOpenMenuId(openMenuId === id ? null : id)
+  }
+
+  const closeAllMenus = () => {
+    setOpenMenuId(null)
+  }
+
+  const pinCollection = (id: number) => {
+    setVideoCollections(
+      videoCollections.map(collection => 
+        collection.id === id 
+          ? { ...collection, isPinned: !collection.isPinned } 
+          : collection
+      )
+    )
+    closeAllMenus()
+  }
+
+  const duplicateCollection = (id: number) => {
+    const collectionToDuplicate = videoCollections.find(collection => collection.id === id)
+    if (collectionToDuplicate) {
+      const duplicatedCollection = {
+        ...collectionToDuplicate,
+        id: Date.now(),
+        name: `${collectionToDuplicate.name} (copy)`,
+      }
+      setVideoCollections([...videoCollections, duplicatedCollection])
+    }
+    closeAllMenus()
+  }
+
+  const deleteCollection = (id: number) => {
+    setVideoCollections(videoCollections.filter(collection => collection.id !== id))
+    closeAllMenus()
+  }
+
+  // Sort collections so pinned items appear first
+  const sortedCollections = [...videoCollections].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1
+    if (!a.isPinned && b.isPinned) return 1
+    return 0
+  })
 
   return (
     <div className="w-full max-w-[1200px] mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Saved Videos</h1>
-        <div className="flex items-center gap-2">
-          {/* Search Input */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search saved videos"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-60 bg-[#2D2D2D] text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none"
-            />
-          </div>
-          
-          {/* Filter Button */}
-          <button className="p-2 text-white bg-[#2D2D2D] rounded-lg hover:bg-[#3D3D3D] transition-colors">
-            <Filter size={18} />
-          </button>
-          
-          {/* View Mode Toggle */}
-          <div className="flex bg-[#2D2D2D] rounded-lg overflow-hidden">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">Saved videos</h1>
+      </div>
+      
+      {videoCollections.length === 0 ? (
+        // Empty state container
+        <div className="flex items-center justify-center py-24">
+          <div className="w-full max-w-lg h-64 border-2 border-dashed border-[#2D2D2D] rounded-lg flex flex-col items-center justify-center p-8 text-center">
+            <p className="text-gray-400 mb-6">You haven't created any video collections yet.</p>
             <button 
-              onClick={() => setViewMode('grid')}
-              className={`p-2 text-white transition-colors ${viewMode === 'grid' ? 'bg-[#3D3D3D]' : 'hover:bg-[#3D3D3D]'}`}
-              aria-label="Grid view"
+              onClick={() => openModal()}
+              className="flex items-center gap-2 bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-lg transition-colors"
             >
-              <LayoutGrid size={18} />
-            </button>
-            <button 
-              onClick={() => setViewMode('list')}
-              className={`p-2 text-white transition-colors ${viewMode === 'list' ? 'bg-[#3D3D3D]' : 'hover:bg-[#3D3D3D]'}`}
-              aria-label="List view"
-            >
-              <List size={18} />
+              <Plus size={18} />
+              <span>Create new collection</span>
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* Filter Pills */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <button className="flex items-center gap-1 bg-[#00FF8C]/10 text-[#00FF8C] py-1 px-3 rounded-full text-sm font-medium">
-          <CheckCircle2 size={14} />
-          <span>Watched</span>
-        </button>
-        <button className="flex items-center gap-1 bg-[#2D2D2D] text-white py-1 px-3 rounded-full text-sm font-medium hover:bg-[#3D3D3D] transition-colors">
-          <Clock size={14} />
-          <span>In Progress</span>
-        </button>
-        <button className="flex items-center gap-1 bg-[#2D2D2D] text-white py-1 px-3 rounded-full text-sm font-medium hover:bg-[#3D3D3D] transition-colors">
-          <BookmarkPlus size={14} />
-          <span>Not Started</span>
-        </button>
-        <button className="flex items-center gap-1 bg-[#2D2D2D] text-white py-1 px-3 rounded-full text-sm font-medium hover:bg-[#3D3D3D] transition-colors">
-          <AlignLeft size={14} />
-          <span>Category</span>
-        </button>
-      </div>
-
-      {/* Videos Grid/List */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVideos.map(video => (
-            <Link
-              key={video.id}
-              href={`/saved-videos/${video.id}`}
-              className="bg-[#1E1E1E] rounded-lg overflow-hidden hover:bg-[#252525] transition-colors"
-            >
-              <div className="relative">
-                <img 
-                  src={video.thumbnail} 
-                  alt={video.title} 
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 text-xs rounded">
-                  {video.duration}
-                </div>
-                <div className="absolute top-2 right-2 bg-black/80 text-white flex items-center gap-1 px-2 py-1 text-xs rounded">
-                  {statusIcons[video.status]}
-                  <span>{video.status}</span>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-white font-medium mb-2 line-clamp-2">{video.title}</h3>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-6 h-6 rounded-full overflow-hidden">
-                    <img 
-                      src={video.channelAvatar} 
-                      alt={video.channelName} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-gray-400 text-sm">{video.channelName}</span>
-                </div>
-                <div className="flex justify-between text-xs text-gray-400">
-                  <span>{video.views} views</span>
-                  <span>{video.timestamp}</span>
-                </div>
-              </div>
-            </Link>
-          ))}
         </div>
       ) : (
-        <div className="space-y-4">
-          {filteredVideos.map(video => (
-            <Link
-              key={video.id}
-              href={`/saved-videos/${video.id}`}
-              className="flex bg-[#1E1E1E] rounded-lg overflow-hidden hover:bg-[#252525] transition-colors"
-            >
-              <div className="relative w-64 min-w-[256px]">
-                <img 
-                  src={video.thumbnail} 
-                  alt={video.title} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 text-xs rounded">
-                  {video.duration}
-                </div>
+        // Video collections grid
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Create new collection button - Always first */}
+          <div 
+            className="border border-dashed border-[#2D2D2D] rounded-lg p-5 cursor-pointer hover:bg-[#1A1A1A] transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              openModal()
+            }}
+          >
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 text-[#d61204]">
+                <Plus size={18} />
+                <span className="font-medium">Create new collection</span>
               </div>
-              <div className="flex flex-col justify-between p-4 flex-1">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-white font-medium">{video.title}</h3>
-                    <div className="flex items-center gap-1 bg-black/20 text-white px-2 py-1 text-xs rounded">
-                      {statusIcons[video.status]}
-                      <span>{video.status}</span>
-                    </div>
+            </div>
+            <p className="text-gray-400 text-sm mt-1">Add a new video collection</p>
+          </div>
+          
+          {/* Video collections */}
+          {sortedCollections.map((collection) => (
+            <div key={collection.id} className="relative">
+              <Link href={`/saved-videos/${collection.id}?name=${encodeURIComponent(collection.name)}`}>
+                <div className="bg-[#1A1A1A] hover:bg-[#2D2D2D] border border-[#2D2D2D] rounded-lg p-5 transition-colors cursor-pointer group">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-white font-medium text-lg">{collection.name}</h3>
+                    <button 
+                      onClick={(e) => toggleMenu(collection.id, e)}
+                      className="text-gray-400 hover:text-white p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    >
+                      <MoreVertical size={16} />
+                    </button>
                   </div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-6 h-6 rounded-full overflow-hidden">
-                      <img 
-                        src={video.channelAvatar} 
-                        alt={video.channelName} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-gray-400 text-sm">{video.channelName}</span>
-                  </div>
-                  <div className="text-xs text-gray-400 mb-2">
-                    <span>{video.views} views • {video.timestamp}</span>
-                  </div>
+                  <p className="text-gray-400 text-sm mt-1">{collection.videoCount} videos</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="bg-[#2D2D2D] text-white text-xs px-2 py-1 rounded">
-                    {video.category}
-                  </span>
+              </Link>
+
+              {/* Context menu */}
+              {openMenuId === collection.id && (
+                <div 
+                  ref={menuRef}
+                  className="absolute top-12 right-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-md shadow-lg py-2 z-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button 
+                    className="flex items-center gap-3 w-full px-4 py-2 text-sm text-white hover:bg-[#3A3A3A] transition-colors text-left"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      pinCollection(collection.id)
+                    }}
+                  >
+                    <Pin size={16} className={collection.isPinned ? 'text-[#d61204]' : ''} />
+                    {collection.isPinned ? 'Unpin' : 'Pin'}
+                  </button>
+                  <button 
+                    className="flex items-center gap-3 w-full px-4 py-2 text-sm text-white hover:bg-[#3A3A3A] transition-colors text-left"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      openModal(collection.id)
+                    }}
+                  >
+                    <Edit2 size={16} />
+                    Rename
+                  </button>
+                  <button 
+                    className="flex items-center gap-3 w-full px-4 py-2 text-sm text-white hover:bg-[#3A3A3A] transition-colors text-left"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      duplicateCollection(collection.id)
+                    }}
+                  >
+                    <Copy size={16} />
+                    Duplicate
+                  </button>
+                  <button 
+                    className="flex items-center gap-3 w-full px-4 py-2 text-sm text-white hover:bg-[#3A3A3A] transition-colors text-left text-red-400 hover:text-red-300"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      deleteCollection(collection.id)
+                    }}
+                  >
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
                 </div>
-              </div>
-            </Link>
+              )}
+            </div>
           ))}
         </div>
       )}
+
+      {/* Modal Dialog */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-[#1F1F1F] rounded-lg w-full max-w-md p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={closeModal} 
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+            <h3 className="text-xl font-semibold text-white mb-6">
+              {editingCollectionId ? 'Rename collection' : 'Create new collection'}
+            </h3>
+            <div className="mb-6">
+              <label htmlFor="collectionName" className="block text-sm font-medium text-gray-300 mb-2">
+                Collection name
+              </label>
+              <input
+                type="text"
+                id="collectionName"
+                value={collectionName}
+                onChange={(e) => setCollectionName(e.target.value)}
+                className="w-full px-4 py-2 bg-[#2D2D2D] border border-[#3A3A3A] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#d61204]/50"
+                placeholder="Enter collection name"
+                autoFocus
+              />
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 text-white bg-transparent hover:bg-[#2D2D2D] rounded-md transition-colors mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-[#d61204] hover:bg-[#b81003] text-white rounded-md transition-colors"
+                disabled={!collectionName.trim()}
+              >
+                {editingCollectionId ? 'Save changes' : 'Create collection'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 } 

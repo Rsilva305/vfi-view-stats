@@ -1,192 +1,173 @@
 "use client";
 
-import Link from "next/link";
-import { Search, Play, Clock, CheckCircle, Circle } from "lucide-react";
-import { useState } from "react";
+import { useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { CheckCircle, Circle } from 'lucide-react'
 
-// Mock data for tutorials
-const mockTutorials = [
+interface Tutorial {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  watched: boolean;
+  category: 'algorithm' | 'basics' | 'research' | 'organization';
+}
+
+// Mock data for tutorial videos
+const tutorials: Tutorial[] = [
   {
-    id: "1",
-    title: "Getting Started with YouTube Research",
-    thumbnail: "https://picsum.photos/id/11/640/360",
-    duration: "5:42",
-    description: "Learn how to effectively research popular topics on YouTube",
-    category: "Fundamentals",
-    isWatched: true
+    id: '1',
+    title: 'How To Make The Algorithm LOVE You (Step-By-Step Strategy)',
+    description: 'Discover the step-by-step, data driven way to use Saved Channels to figure out exactly what topics are trending and proven to get views in your niche',
+    thumbnail: '/images/tutorials/algorithm-strategy.png',
+    watched: true,
+    category: 'algorithm'
   },
   {
-    id: "2",
-    title: "Finding Your Niche on YouTube",
-    thumbnail: "https://picsum.photos/id/12/640/360",
-    duration: "8:15",
-    description: "Discover how to identify and develop your unique niche",
-    category: "Strategy",
-    isWatched: false
+    id: '2',
+    title: 'Complete Beginner Guide - How To Use Velio To Get More Views',
+    description: 'Everything you need to use Velio to blow up your channel',
+    thumbnail: '/images/tutorials/beginner-guide.png',
+    watched: false,
+    category: 'basics'
   },
   {
-    id: "3",
-    title: "Creating Compelling Thumbnails",
-    thumbnail: "https://picsum.photos/id/13/640/360",
-    duration: "12:37",
-    description: "Master the art of creating thumbnails that drive clicks",
-    category: "Design",
-    isWatched: false
+    id: '3',
+    title: 'How To Find Data-Proven Ideas, Titles, Thumbnails & More',
+    description: 'Learn exactly how to use the Research Tab to find viral video ideas, titles and thumbnails like the pros.',
+    thumbnail: '/images/tutorials/research-guide.png',
+    watched: false,
+    category: 'research'
   },
   {
-    id: "4",
-    title: "Writing Titles That Convert",
-    thumbnail: "https://picsum.photos/id/14/640/360",
-    duration: "7:29",
-    description: "Learn the psychology behind high-converting video titles",
-    category: "Copy Writing",
-    isWatched: true
-  },
-  {
-    id: "5",
-    title: "Growing Your Subscriber Base",
-    thumbnail: "https://picsum.photos/id/15/640/360",
-    duration: "15:03",
-    description: "Strategies to increase your subscriber count quickly",
-    category: "Growth",
-    isWatched: false
-  },
-  {
-    id: "6",
-    title: "YouTube Analytics Deep Dive",
-    thumbnail: "https://picsum.photos/id/16/640/360",
-    duration: "18:45",
-    description: "Understanding key metrics to improve your content strategy",
-    category: "Analytics",
-    isWatched: false
+    id: '4',
+    title: 'How To Properly Organize and Implement Your Research',
+    description: 'How to use the Saved Videos Tab to organise all your research',
+    thumbnail: '/images/tutorials/organization-guide.png',
+    watched: false,
+    category: 'organization'
   }
 ];
 
-// Categories for filter
-const categories = ["All", "Fundamentals", "Strategy", "Design", "Copy Writing", "Growth", "Analytics"];
+export default function Learn() {
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
-export default function Learn(): JSX.Element {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  
-  // Filter tutorials based on search query and category
-  const filteredTutorials = mockTutorials.filter(tutorial => {
-    const matchesSearch = tutorial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         tutorial.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || tutorial.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  // Function to get category-specific content
+  const getCategoryContent = (category: string) => {
+    switch(category) {
+      case 'algorithm':
+        return {
+          icon: "📈",
+          text: "It's Not Luck",
+          bgColor: "bg-gradient-to-br from-[#121212] to-[#1A1A1A]",
+          accentColor: "border-l-[#d61204]"
+        };
+      case 'basics':
+        return {
+          icon: "101",
+          text: "Velio Basics",
+          bgColor: "bg-gradient-to-br from-[#121212] to-[#1A1A1A]",
+          accentColor: "border-l-[#00B3FF]"
+        };
+      case 'research':
+        return {
+          icon: "🔍",
+          text: "Research",
+          bgColor: "bg-gradient-to-br from-[#121212] to-[#1A1A1A]",
+          accentColor: "border-l-[#FF8C00]"
+        };
+      case 'organization':
+        return {
+          icon: "📁",
+          text: "Organization",
+          bgColor: "bg-gradient-to-br from-[#121212] to-[#1A1A1A]",
+          accentColor: "border-l-[#9966FF]"
+        };
+      default:
+        return {
+          icon: "📚",
+          text: "Tutorial",
+          bgColor: "bg-gradient-to-br from-[#121212] to-[#1A1A1A]",
+          accentColor: "border-l-[#1DB954]"
+        };
+    }
+  };
 
   return (
     <div className="w-full max-w-[1200px] mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Learn</h1>
-        <div className="relative w-64">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search tutorials"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#2D2D2D] text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none"
-          />
-        </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {categories.map(category => (
-          <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            className={`py-1 px-3 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === category
-                ? 'bg-[#00FF8C]/10 text-[#00FF8C]'
-                : 'bg-[#2D2D2D] text-white hover:bg-[#3D3D3D]'
-            }`}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {tutorials.map((tutorial) => {
+          const categoryContent = getCategoryContent(tutorial.category);
+          
+          return (
+            <div 
+              key={tutorial.id} 
+              className="bg-[#1A1A1A] rounded-lg overflow-hidden border border-[#2D2D2D]"
+              onMouseEnter={() => setHoveredCard(tutorial.id)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3">
+                {/* Tutorial image area - takes 1/3 of the card on desktop */}
+                <div className={`relative h-48 md:h-full ${categoryContent.bgColor} border-l-4 ${categoryContent.accentColor}`}>
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <div className="text-5xl font-bold">{categoryContent.icon}</div>
+                    {tutorial.category === 'algorithm' && (
+                      <div className="absolute bottom-4 left-4 right-4 text-2xl font-bold text-[#d61204]">
+                        It's Not Luck
+                      </div>
+                    )}
+                    {tutorial.category === 'basics' && (
+                      <div className="absolute bottom-4 left-4 right-4 text-center">
+                        <span className="text-6xl font-bold text-[#00B3FF]">101</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Tutorial content - takes 2/3 of the card on desktop */}
+                <div className="p-6 md:col-span-2 relative">
+                  <div className="mb-2">
+                    <h2 className="text-xl font-semibold text-white">{tutorial.title}</h2>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4">{tutorial.description}</p>
+                  
+                  {/* Watched status */}
+                  <div className="flex items-center gap-2">
+                    {tutorial.watched ? (
+                      <>
+                        <CheckCircle size={18} className="text-[#d61204]" />
+                        <span className="text-[#d61204] text-sm">Watched</span>
+                      </>
+                    ) : (
+                      <>
+                        <Circle size={18} className="text-gray-400" />
+                        <span className="text-gray-400 text-sm">Watched</span>
+                      </>
+                    )}
+                  </div>
 
-      {/* Progress Summary */}
-      <div className="bg-[#1E1E1E] p-4 rounded-lg mb-8">
-        <h2 className="text-white font-medium mb-2">Your Progress</h2>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="text-[#00FF8C]" size={18} />
-            <span className="text-white">{mockTutorials.filter(t => t.isWatched).length} Completed</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="text-yellow-500" size={18} />
-            <span className="text-white">{mockTutorials.filter(t => !t.isWatched).length} Remaining</span>
-          </div>
-          <div className="flex-1">
-            <div className="h-2 bg-[#2D2D2D] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[#00FF8C]" 
-                style={{ width: `${(mockTutorials.filter(t => t.isWatched).length / mockTutorials.length) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tutorials Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTutorials.map(tutorial => (
-          <Link
-            key={tutorial.id}
-            href={`/learn/${tutorial.id}`}
-            className="bg-[#1E1E1E] rounded-lg overflow-hidden hover:bg-[#252525] transition-colors group"
-          >
-            <div className="relative">
-              <img 
-                src={tutorial.thumbnail} 
-                alt={tutorial.title} 
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <div className="bg-white/20 rounded-full p-3">
-                  <Play fill="white" className="h-8 w-8 text-white" />
+                  {/* Hover state button (only visible on hover) */}
+                  {hoveredCard === tutorial.id && (
+                    <div className="absolute bottom-6 right-6">
+                      <Link 
+                        href={`/learn/${tutorial.id}`}
+                        className="bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-md transition-colors"
+                      >
+                        Watch Tutorial
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 text-xs rounded">
-                {tutorial.duration}
-              </div>
-              <div className="absolute top-2 left-2">
-                {tutorial.isWatched ? (
-                  <div className="bg-[#00FF8C]/20 text-[#00FF8C] flex items-center gap-1 px-2 py-1 text-xs rounded-full">
-                    <CheckCircle size={12} />
-                    <span>Watched</span>
-                  </div>
-                ) : (
-                  <div className="bg-[#2D2D2D] text-white flex items-center gap-1 px-2 py-1 text-xs rounded-full">
-                    <Circle size={12} />
-                    <span>Not watched</span>
-                  </div>
-                )}
-              </div>
             </div>
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-white font-medium">{tutorial.title}</h3>
-              </div>
-              <p className="text-gray-400 text-sm mb-3 line-clamp-2">{tutorial.description}</p>
-              <div className="flex justify-between items-center">
-                <span className="bg-[#2D2D2D] text-white text-xs px-2 py-1 rounded">
-                  {tutorial.category}
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
-  );
+  )
 } 

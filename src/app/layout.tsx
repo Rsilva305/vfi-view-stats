@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Velio - YouTube Analytics",
+  title: "VueIQ - YouTube Analytics",
   description: "A modern video content platform for discovering and tracking YouTube channels",
 };
 

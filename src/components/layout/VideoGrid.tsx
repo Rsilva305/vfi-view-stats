@@ -48,7 +48,7 @@ const VideoCard = ({ video }: { video: Video }) => {
           />
         </div>
         <div>
-          <h3 className="text-white font-medium line-clamp-2 group-hover:text-[#00FF8C] transition-colors">
+          <h3 className="text-white font-medium line-clamp-2 group-hover:text-[#d61204] transition-colors">
             {video.title}
           </h3>
           <p className="text-gray-400 text-sm mt-1">{video.channelName}</p>
