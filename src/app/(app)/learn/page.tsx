@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from 'react'
 import Image from 'next/image'
@@ -61,7 +61,7 @@ export default function Learn() {
           icon: "📈",
           text: "It's Not Luck",
           bgColor: "bg-gradient-to-br from-[#121212] to-[#1A1A1A]",
-          accentColor: "border-l-[#00FF8C]"
+          accentColor: "border-l-[#d61204]"
         };
       case 'basics':
         return {
@@ -117,7 +117,7 @@ export default function Learn() {
                   <div className="absolute inset-0 flex items-center justify-center z-10">
                     <div className="text-5xl font-bold">{categoryContent.icon}</div>
                     {tutorial.category === 'algorithm' && (
-                      <div className="absolute bottom-4 left-4 right-4 text-2xl font-bold text-[#00FF8C]">
+                      <div className="absolute bottom-4 left-4 right-4 text-2xl font-bold text-[#d61204]">
                         It's Not Luck
                       </div>
                     )}
@@ -140,8 +140,8 @@ export default function Learn() {
                   <div className="flex items-center gap-2">
                     {tutorial.watched ? (
                       <>
-                        <CheckCircle size={18} className="text-[#00FF8C]" />
-                        <span className="text-[#00FF8C] text-sm">Watched</span>
+                        <CheckCircle size={18} className="text-[#d61204]" />
+                        <span className="text-[#d61204] text-sm">Watched</span>
                       </>
                     ) : (
                       <>
@@ -156,7 +156,7 @@ export default function Learn() {
                     <div className="absolute bottom-6 right-6">
                       <Link 
                         href={`/learn/${tutorial.id}`}
-                        className="bg-[#1DB954] hover:bg-[#1DB954]/90 text-white px-4 py-2 rounded-md transition-colors"
+                        className="bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-md transition-colors"
                       >
                         Watch Tutorial
                       </Link>

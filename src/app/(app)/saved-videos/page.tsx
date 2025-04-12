@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useRef, useEffect } from 'react'
 import { Plus, X, MoreVertical, Pin, Edit2, Copy, Trash2 } from 'lucide-react'
@@ -170,7 +170,7 @@ export default function SavedVideos() {
             <p className="text-gray-400 mb-6">You haven't created any video collections yet.</p>
             <button 
               onClick={() => openModal()}
-              className="flex items-center gap-2 bg-[#1DB954] hover:bg-[#1DB954]/90 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-[#d61204] hover:bg-[#b81003] text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus size={18} />
               <span>Create new collection</span>
@@ -189,7 +189,7 @@ export default function SavedVideos() {
             }}
           >
             <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2 text-[#00FF8C]">
+              <div className="flex items-center gap-2 text-[#d61204]">
                 <Plus size={18} />
                 <span className="font-medium">Create new collection</span>
               </div>
@@ -230,7 +230,7 @@ export default function SavedVideos() {
                       pinCollection(collection.id)
                     }}
                   >
-                    <Pin size={16} className={collection.isPinned ? 'text-[#00FF8C]' : ''} />
+                    <Pin size={16} className={collection.isPinned ? 'text-[#d61204]' : ''} />
                     {collection.isPinned ? 'Unpin' : 'Pin'}
                   </button>
                   <button 
@@ -301,7 +301,7 @@ export default function SavedVideos() {
                 id="collectionName"
                 value={collectionName}
                 onChange={(e) => setCollectionName(e.target.value)}
-                className="w-full px-4 py-2 bg-[#2D2D2D] border border-[#3A3A3A] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#00FF8C]/50"
+                className="w-full px-4 py-2 bg-[#2D2D2D] border border-[#3A3A3A] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#d61204]/50"
                 placeholder="Enter collection name"
                 autoFocus
               />
@@ -315,7 +315,7 @@ export default function SavedVideos() {
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-[#1DB954] hover:bg-[#1DB954]/90 text-white rounded-md transition-colors"
+                className="px-4 py-2 bg-[#d61204] hover:bg-[#b81003] text-white rounded-md transition-colors"
                 disabled={!collectionName.trim()}
               >
                 {editingCollectionId ? 'Save changes' : 'Create collection'}
