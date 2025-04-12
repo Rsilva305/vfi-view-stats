@@ -1,34 +1,41 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, Bookmark, Layers, Search, Home } from 'lucide-react'
+import { BookOpen, Bookmark, Layers, Search, Home, AlignJustify } from 'lucide-react'
 
 interface SidebarItemProps {
   icon: React.ReactNode
   label: string
   href: string
   isActive?: boolean
+  collapsed?: boolean
 }
 
-const SidebarItem = ({ icon, label, href, isActive }: SidebarItemProps): JSX.Element => {
+const SidebarItem = ({ icon, label, href, isActive, collapsed }: SidebarItemProps): JSX.Element => {
   return (
     <Link 
       href={href}
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+      className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-3'} py-2 rounded-lg transition-all duration-200 ${
         isActive 
           ? 'bg-[#00FF8C]/10 text-[#00FF8C]' 
           : 'text-gray-400 hover:bg-[#2D2D2D] hover:text-white'
       }`}
     >
-      {icon}
-      <span className="text-sm font-medium">{label}</span>
+      <div className={collapsed ? 'flex justify-center items-center w-full' : ''}>
+        {icon}
+      </div>
+      {!collapsed && <span className="text-sm font-medium transition-opacity duration-200">{label}</span>}
     </Link>
   )
 }
 
-export default function Sidebar(): JSX.Element {
+interface SidebarProps {
+  collapsed: boolean;
+  toggleSidebar: () => void;
+}
+
+export default function Sidebar({ collapsed, toggleSidebar }: SidebarProps): JSX.Element {
   const pathname = usePathname()
   
   const isActive = (path: string): boolean => {
@@ -39,9 +46,20 @@ export default function Sidebar(): JSX.Element {
   }
   
   return (
-    <div className="w-[240px] min-h-screen bg-[#121212] border-r border-[#2D2D2D]/50 py-6 flex flex-col">
-      <div className="px-4 mb-6">
-        <h2 className="text-white font-bold text-lg">Navigation</h2>
+    <div 
+      className={`${
+        collapsed ? 'w-[84px]' : 'w-[240px]'
+      } min-h-screen bg-[#121212] border-r border-[#2D2D2D]/50 py-6 flex flex-col transition-all duration-300 ease-in-out`}
+    >
+      <div className={`${collapsed ? 'px-2' : 'px-4'} mb-6 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
+        {!collapsed && <h2 className="text-white font-bold text-lg">Navigation</h2>}
+        <button 
+          onClick={toggleSidebar}
+          className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-[#2D2D2D] transition-colors"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <AlignJustify className="h-5 w-5" />
+        </button>
       </div>
       
       <div className="flex flex-col gap-1 px-2">
@@ -50,37 +68,44 @@ export default function Sidebar(): JSX.Element {
           label="Home" 
           href="/"
           isActive={isActive('/')} 
+          collapsed={collapsed}
         />
         <SidebarItem 
           icon={<Search size={20} />} 
           label="Research" 
           href="/research"
           isActive={isActive('/research')} 
+          collapsed={collapsed}
         />
         <SidebarItem 
           icon={<Layers size={20} />} 
           label="Tracked channels" 
           href="/tracked-channels"
           isActive={isActive('/tracked-channels')} 
+          collapsed={collapsed}
         />
         <SidebarItem 
           icon={<Bookmark size={20} />} 
           label="Saved videos" 
           href="/saved-videos"
           isActive={isActive('/saved-videos')} 
+          collapsed={collapsed}
         />
         <SidebarItem 
           icon={<BookOpen size={20} />} 
           label="Learn" 
           href="/learn"
           isActive={isActive('/learn')} 
+          collapsed={collapsed}
         />
       </div>
       
       <div className="mt-auto px-4">
-        <div className="border-t border-[#2D2D2D]/50 pt-4">
-          <p className="text-[#808080] text-xs">© 2025 VFI Beta</p>
-        </div>
+        {!collapsed && (
+          <div className="border-t border-[#2D2D2D]/50 pt-4">
+            <p className="text-[#808080] text-xs">© 2025 VFI Beta</p>
+          </div>
+        )}
       </div>
     </div>
   )
