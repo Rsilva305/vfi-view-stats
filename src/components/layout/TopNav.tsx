@@ -34,15 +34,9 @@ export default function TopNav({ collapsed, toggleSidebar }: TopNavProps): JSX.E
 
       {/* User Controls */}
       <div className="flex items-center gap-4">
-        <button className="text-white p-2 rounded-full hover:bg-[#2D2D2D] transition-colors">
-          <Shuffle className="h-5 w-5" />
-        </button>
         <button className="flex items-center gap-1 text-white bg-[#d61204] hover:bg-[#b81003] px-3 py-1.5 rounded-lg transition-colors">
           <Zap className="h-4 w-4" />
           <span className="text-sm font-medium">Extension</span>
-        </button>
-        <button className="text-white p-2 rounded-full hover:bg-[#2D2D2D] transition-colors">
-          <HelpCircle className="h-5 w-5" />
         </button>
         
         {/* User profile dropdown */}
