@@ -18,9 +18,11 @@ interface Video {
 
 interface VideoGridProps {
   videos: Video[]
+  showTextDetails?: boolean
+  videosPerRow?: number
 }
 
-const VideoCard = ({ video }: { video: Video }) => {
+const VideoCard = ({ video, showTextDetails }: { video: Video, showTextDetails: boolean }) => {
   return (
     <Link 
       key={video.id} 
@@ -38,34 +40,56 @@ const VideoCard = ({ video }: { video: Video }) => {
           {video.duration}
         </div>
       </div>
-      <div className="mt-3 flex gap-3">
-        <div className="relative w-10 h-10 rounded-full overflow-hidden">
-          <Image
-            src={video.channelAvatar}
-            alt={video.channelName}
-            fill
-            className="object-cover"
-          />
+      {showTextDetails && (
+        <div className="mt-3 flex gap-3">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden">
+            <Image
+              src={video.channelAvatar}
+              alt={video.channelName}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <h3 className="text-white font-medium line-clamp-2 group-hover:text-[#d61204] transition-colors">
+              {video.title}
+            </h3>
+            <p className="text-gray-400 text-sm mt-1">{video.channelName}</p>
+            <p className="text-gray-400 text-sm">
+              {video.views} views • {video.timestamp}
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-white font-medium line-clamp-2 group-hover:text-[#d61204] transition-colors">
-            {video.title}
-          </h3>
-          <p className="text-gray-400 text-sm mt-1">{video.channelName}</p>
-          <p className="text-gray-400 text-sm">
-            {video.views} views • {video.timestamp}
-          </p>
-        </div>
-      </div>
+      )}
     </Link>
   )
 }
 
-export default function VideoGrid({ videos }: VideoGridProps): JSX.Element {
+export default function VideoGrid({ videos, showTextDetails = true, videosPerRow = 4 }: VideoGridProps): JSX.Element {
+  // Determine the grid columns based on videosPerRow
+  const getGridColumns = () => {
+    switch (videosPerRow) {
+      case 1:
+        return 'grid-cols-1'
+      case 2:
+        return 'grid-cols-1 md:grid-cols-2'
+      case 3:
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+      case 4:
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+      case 5:
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+      case 6:
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'
+      default:
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    }
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className={`grid ${getGridColumns()} gap-6`}>
       {videos.map((video) => (
-        <VideoCard key={video.id} video={video} />
+        <VideoCard key={video.id} video={video} showTextDetails={showTextDetails} />
       ))}
     </div>
   )
